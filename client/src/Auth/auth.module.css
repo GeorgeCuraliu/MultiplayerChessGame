@@ -1,0 +1,30 @@
+.pageContainer{
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #302E2B;
+}
+
+.authIcon{
+    width: 60vw;
+    height: 60vw;
+    padding-top: 5vw;
+}
+
+.inputContainer {
+    background-color: #666564;
+    margin-top: 7vw;
+    width: 60vw;
+    height: 100vw;
+    border-radius: 10px;
+    border: 2px solid black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.confirmData {
+    
+}
