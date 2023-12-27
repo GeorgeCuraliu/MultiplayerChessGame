@@ -19,7 +19,7 @@ const AuthPage = () => {
 
     const login = (username, password) => {
         console.log(`login with ${username} ${password} to adress ${process.env.REACT_APP_API_BASE_URL}`);
-        axios.post(`${process.env.REACT_APP_API_BASE_URL}/login`, {username, password})
+        axios.post(`${process.env.REACT_APP_API_BASE_URL}/login`, {username, password}, {withCredentials: true})
         .then(res => {
             console.log(res);
         })

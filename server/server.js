@@ -28,13 +28,23 @@ const sequelize = new Sequelize({
 dotenv.config();
 const port = process.env.PORT;
 
+const corsOBJ = {
+  'Access-Control-Allow-Origin': 'http://192.168.0.151:3000',
+  'Access-Control-Allow-Credentials': true,
+  'Access-Control-Allow-Headers': [
+    'Content-Type',
+    'Authorization'
+  ]
+}
+
 const app = express();
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.json());
-app.use(cors());
 const expressWsInstance = expressWs(app);
 const ws = expressWsInstance.getWss();
+app.use(cors(corsOBJ));
+
 
 app.post("/login", async (req, res) => {
     console.log(req.cookies.credentials);
@@ -54,7 +64,7 @@ app.post("/login", async (req, res) => {
 
 });
 
-app.post("/createAcc", async (req, res) => {
+app.post("/createAcc",cors(corsOBJ), async (req, res) => {
 
     try {
         await sequelize.transaction(async(t) => {
