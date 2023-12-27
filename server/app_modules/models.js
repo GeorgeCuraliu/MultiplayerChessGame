@@ -33,6 +33,30 @@ const models = {
             type: Sequelize.DataTypes.NUMBER,
             defaultValue: 0
         }
+    },
+    matches: {
+        id:{
+            type: Sequelize.DataTypes.UUID,
+            defaultValue: Sequelize.DataTypes.UUIDV4,
+            unique: true,
+            primaryKey: true
+        },
+        player1: {
+            type: Sequelize.DataTypes.UUID,
+            allowNull:false
+        },
+        player2: {
+            type: Sequelize.DataTypes.UUID,
+            allowNull:false
+        },
+        status: {
+            type: Sequelize.DataTypes.STRING,
+            allowNull: false
+        },
+        winner: {
+            type: Sequelize.DataTypes.BOOLEAN,//false for player1, true for player2
+            allowNull: true
+        }
     }
 }
 

@@ -1,0 +1,47 @@
+const Sequelize = require('sequelize');
+const sequelize = new Sequelize('database_name', 'username', 'password', {
+  dialect: 'sqlite3',
+  storage: 'data.sqlite'
+});
+
+const User = sequelize.define('users', {
+  userId: sequelize.INTEGER(11).PRIMARY_KEY,
+  username: sequelize.STRING(255).NOT_NULL,
+  password: sequelize.STRING(255).NOT_NULL
+});
+
+const Match = sequelize.define('matches', {
+  matchId: sequelize.INTEGER(11).PRIMARY_KEY,
+  player1: sequelize.INTEGER(11),
+  player2: sequelize.INTEGER(11),
+  winner: sequelize.INTEGER(11),
+  points: sequelize.INTEGER(11)
+});
+
+Match.belongsTo(User, {
+  foreignKey: {
+    allowNull: false
+  },
+  as: 'player1'
+});
+
+Match.belongsTo(User, {
+  foreignKey: {
+    allowNull: false
+  },
+  as: 'player2'
+});
+
+sequelize.sync();
+
+// Retrieve matches for specific user (userId: 123)
+const user = User.findOne({
+  where: {
+    userId: 123
+  }
+});
+
+if (user) {
+  const userMatches = user.getMatches();
+  console.log('Matches for user:', userMatches);
+}
