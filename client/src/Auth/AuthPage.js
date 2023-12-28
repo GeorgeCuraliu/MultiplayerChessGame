@@ -27,7 +27,7 @@ const AuthPage = () => {
 
     const createAcc = (username, password) => {
         console.log(`creating acc with ${username} ${password} to adress ${process.env.REACT_APP_API_BASE_URL}`);
-        axios.post(`${process.env.REACT_APP_API_BASE_URL}/createAcc`, {username, password})
+        axios.post(`${process.env.REACT_APP_API_BASE_URL}/createAcc`, {username, password}, {withCredentials: true})
         .then(res => {
             console.log(res);
         }).catch(res => {

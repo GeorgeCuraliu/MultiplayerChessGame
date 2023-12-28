@@ -29,12 +29,8 @@ dotenv.config();
 const port = process.env.PORT;
 
 const corsOBJ = {
-  'Access-Control-Allow-Origin': 'http://192.168.0.151:3000',
-  'Access-Control-Allow-Credentials': true,
-  'Access-Control-Allow-Headers': [
-    'Content-Type',
-    'Authorization'
-  ]
+  origin: 'http://192.168.0.151:3000',
+  credentials: true
 }
 
 const app = express();
@@ -47,15 +43,16 @@ app.use(cors(corsOBJ));
 
 
 app.post("/login", async (req, res) => {
-    console.log(req.cookies.credentials);
+    //console.log(req.cookies.credentials);
 
     try{
 
       const users = await sequelize.define(`Users`, models.users);
       const user = await users.findOne({where: {username: req.body.username}});
 
-      if(user && CryptoJS.AES.decrypt(user.dataValues.password, req.body.password) == req.body.password){
-        console.log("good");
+      if(user && CryptoJS.AES.decrypt(user.dataValues.password, req.body.password).toString(CryptoJS.enc.Utf8) == req.body.password){
+        console.log(`user ${req.body.username} just logged`);
+        res.cookie("credentials", JSON.stringify(resCookie.encrypt(req.body.username, req.body.password)), {httpOnly: true});
       }
 
     }catch{
@@ -65,7 +62,6 @@ app.post("/login", async (req, res) => {
 });
 
 app.post("/createAcc",cors(corsOBJ), async (req, res) => {
-
     try {
         await sequelize.transaction(async(t) => {
             console.log(req.body);
@@ -97,8 +93,6 @@ app.post("/createAcc",cors(corsOBJ), async (req, res) => {
         console.log(err);
         return res.sendStatus(500);
     }
-
-
 });
 
 
