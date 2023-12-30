@@ -29,7 +29,7 @@ dotenv.config();
 const port = process.env.PORT;
 
 const corsOBJ = {
-  origin: 'http://192.168.0.151:3000',
+  origin: process.env.ORIGIN,
   credentials: true
 }
 
@@ -43,7 +43,7 @@ app.use(cors(corsOBJ));
 
 
 app.post("/login", async (req, res) => {
-    //console.log(req.cookies.credentials);
+    console.log(req.cookies.credentials);
 
     try{
 
@@ -53,6 +53,9 @@ app.post("/login", async (req, res) => {
       if(user && CryptoJS.AES.decrypt(user.dataValues.password, req.body.password).toString(CryptoJS.enc.Utf8) == req.body.password){
         console.log(`user ${req.body.username} just logged`);
         res.cookie("credentials", JSON.stringify(resCookie.encrypt(req.body.username, req.body.password)), {httpOnly: true});
+        res.sendStatus(200);
+      }else{
+        res.sendStatus(401);
       }
 
     }catch{
@@ -61,7 +64,7 @@ app.post("/login", async (req, res) => {
 
 });
 
-app.post("/createAcc",cors(corsOBJ), async (req, res) => {
+app.post("/createAcc", async (req, res) => {
     try {
         await sequelize.transaction(async(t) => {
             console.log(req.body);

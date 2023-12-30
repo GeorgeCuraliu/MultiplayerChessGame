@@ -22,6 +22,8 @@ const AuthPage = () => {
         axios.post(`${process.env.REACT_APP_API_BASE_URL}/login`, {username, password}, {withCredentials: true})
         .then(res => {
             console.log(res);
+        }).catch(err=> {
+            setError("Invalid credentials");
         })
     }
 
@@ -43,7 +45,7 @@ const AuthPage = () => {
     return (
         <div className={styles.pageContainer}>
             <img alt="" src={AuthIcon} className={styles.authIcon} />
-            <div className={styles.inputContainer}>
+            <div  className={styles.inputContainer}>
                 {authType ? 
                     <LoginContainer 
                         changeAuthMethod={changeAuthMethod} 
