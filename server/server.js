@@ -16,6 +16,8 @@ Sequelize.useCLS(namespace);
 const models = require('./app_modules/models');//models for sequelize
 const associations = require("./app_modules/associations");//create associations for models
 const resCookie = require("./app_modules/resCookie");
+const { error } = require("console");
+const { resolveAny } = require("dns/promises");
 
 //INSTANCE OF SEQUELIZE
 const sequelize = new Sequelize({
@@ -34,32 +36,57 @@ const corsOBJ = {
 }
 
 const app = express();
+const expressWsInstance = expressWs(app);
+const ws = expressWsInstance.getWss();
+
+
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.json());
-const expressWsInstance = expressWs(app);
-const ws = expressWsInstance.getWss();
 app.use(cors(corsOBJ));
 
+const checkCredentials = async (username, password) => {
+  return new Promise(async(resolve, reject) => {
+    try{
+      
+      const users = await sequelize.define(`Users`, models.users);
+      const user = await users.findOne({where: {username: username}});
+
+      if(user && CryptoJS.AES.decrypt(user.dataValues.password, password).toString(CryptoJS.enc.Utf8) == password){
+        resolve({username: username, points: user.dataValues.points});
+      }else{
+        resolve(false);
+      }
+
+    }catch(err){
+      console.log(err)
+      console.error('Critical error at checkCredentials');
+      reject();
+    }
+  })
+  
+}
 
 app.post("/login", async (req, res) => {
     console.log(req.cookies.credentials);
 
     try{
+      
+      const validity = await checkCredentials(req.body.username, req.body.password);
 
-      const users = await sequelize.define(`Users`, models.users);
-      const user = await users.findOne({where: {username: req.body.username}});
-
-      if(user && CryptoJS.AES.decrypt(user.dataValues.password, req.body.password).toString(CryptoJS.enc.Utf8) == req.body.password){
+      if(validity){
+        console.log(validity);
         console.log(`user ${req.body.username} just logged`);
         res.cookie("credentials", JSON.stringify(resCookie.encrypt(req.body.username, req.body.password)), {httpOnly: true});
-        res.status(200).json({username: req.body.username, points: user.dataValues.points});
+        return res.status(200).json({...validity});
       }else{
-        res.status(401).json({err : "Invalid credentials+-"});
+        return res.status(401).json({data: "Invalid credentials"})
       }
 
-    }catch{
+    }catch(err){
+      console.log(err);
       console.log('Critical error at /login');
+      return res.sendStatus(500);
     }
 
 });
