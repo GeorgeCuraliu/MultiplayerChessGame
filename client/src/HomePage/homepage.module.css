@@ -1,0 +1,10 @@
+.container{
+    width: 100vw;
+    height: 100vh;
+    background-color: #302E2B;
+}
+
+.usercard{
+    width: 100%;
+    aspect-ratio: 7/1;
+}

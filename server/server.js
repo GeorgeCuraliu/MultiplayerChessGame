@@ -53,13 +53,13 @@ app.post("/login", async (req, res) => {
       if(user && CryptoJS.AES.decrypt(user.dataValues.password, req.body.password).toString(CryptoJS.enc.Utf8) == req.body.password){
         console.log(`user ${req.body.username} just logged`);
         res.cookie("credentials", JSON.stringify(resCookie.encrypt(req.body.username, req.body.password)), {httpOnly: true});
-        res.sendStatus(200);
+        res.status(200).json({username: req.body.username, points: user.dataValues.points});
       }else{
-        res.sendStatus(401);
+        res.status(401).json({err : "Invalid credentials+-"});
       }
 
     }catch{
-      console.log('boom');
+      console.log('Critical error at /login');
     }
 
 });
@@ -76,10 +76,10 @@ app.post("/createAcc", async (req, res) => {
                 username: req.body.username,
                 password: req.body.password
               });
-              
+
               res.cookie("credentials", JSON.stringify(resCookie.encrypt(req.body.username, req.body.password)), {httpOnly: true});
 
-              return res.sendStatus(200).send();
+              return res.status(201).json({username: req.body.username, points: 0});
             } catch (error) {
               console.error("Error creating user");
 

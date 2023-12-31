@@ -6,8 +6,15 @@ import axios from "axios";
 import CreateAcc from "./CreateAcc";
 import ErrorContainer from "../ErrorContainer/ErrorContainer";
 import { createPortal } from "react-dom";
+import { useNavigate } from "react-router-dom";
+import { setValues } from "../store/features/userData";
+import { useDispatch } from "react-redux";
 
 const AuthPage = () => {
+
+    const navigate = useNavigate();
+
+    const dispatch = useDispatch();
 
     const [authType, setAuthType] = useState(true);//will decide which of LoginContainer or CreateAccountContainer is displayed
     const [error, setError] = useState();
@@ -21,9 +28,15 @@ const AuthPage = () => {
         console.log(`login with ${username} ${password} to adress ${process.env.REACT_APP_API_BASE_URL}`);
         axios.post(`${process.env.REACT_APP_API_BASE_URL}/login`, {username, password}, {withCredentials: true})
         .then(res => {
-            console.log(res);
-        }).catch(err=> {
-            setError("Invalid credentials");
+            if(res.status === 200){
+                console.log(res.data)
+                dispatch(setValues({...res.data}))
+                navigate('/homepage');
+            }
+        }).catch(res=> {
+            console.log(res)
+            console.log("err");
+            setError(res.response?.data.data ? res.response.data.data : "Internal server error");
         })
     }
 
@@ -31,10 +44,12 @@ const AuthPage = () => {
         console.log(`creating acc with ${username} ${password} to adress ${process.env.REACT_APP_API_BASE_URL}`);
         axios.post(`${process.env.REACT_APP_API_BASE_URL}/createAcc`, {username, password}, {withCredentials: true})
         .then(res => {
-            console.log(res);
+            if(res.status === 201){
+                navigate('/homepage');
+            }
         }).catch(res => {
             console.log("err");
-                setError(res.response?.data.data ? res.response.data.data : "Internal server error");
+            setError(res.response?.data.data ? res.response.data.data : "Internal server error");
         })
     }
 

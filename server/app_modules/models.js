@@ -50,7 +50,7 @@ const models = {
             allowNull:false
         },
         status: {
-            type: Sequelize.DataTypes.STRING,
+            type: Sequelize.DataTypes.STRING,//ongoing / ended
             allowNull: false
         },
         winner: {
