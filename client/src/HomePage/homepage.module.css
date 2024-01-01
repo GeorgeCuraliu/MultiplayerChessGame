@@ -8,3 +8,49 @@
     width: 100%;
     aspect-ratio: 7/1;
 }
+
+.container1{
+    width: 70vw;
+    aspect-ratio: 1/1;
+    margin-top: 5vh;
+    margin-left: 15vw;
+    background-color: #EAEAEA;
+    border-radius: 2vw;
+}
+
+.findMatchText{
+    position: absolute;
+    top: 5vw;
+    left: 6vw;
+    font-size: 6vw;
+    color:#8B3A3A;
+}
+
+.container2{
+    width: fit-content;
+    height: fit-content;
+    margin-left: 15vw;
+}
+
+.buttonContainer{
+    margin-top: 10vw;
+    width: 70vw;
+    aspect-ratio: 5/1;
+    background-color: #E1B86A;
+    border-radius: 2vw;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.buttonImage{
+    margin-left: 2vw;
+    height: 80%;
+    aspect-ratio: 1/1;
+}
+
+.buttonText{
+    font-size: 7vw;
+    margin-left: 2vw;
+    font-weight: bolder;
+}

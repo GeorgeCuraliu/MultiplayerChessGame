@@ -1,10 +1,14 @@
-import styles from "../Styles/usercard.module.css"
+import styles from "../Styles/usercard.module.css";
+import ChessPlayer from "../../images/chess_player.png";
 
 const UserCard = (props) => {
-    console.log(props)
+    console.log(props);
+    const points = `-${props.points}`;
     return(
         <div className={styles.container}>
-            <p>{props.username}</p>
+            <img className={styles.chessPlayer} alt="chess_player" src={ChessPlayer}/>
+            <p className={styles.username} >{props.username}</p>
+            <p className={styles.points} >{points}</p>
         </div>
     )
 }

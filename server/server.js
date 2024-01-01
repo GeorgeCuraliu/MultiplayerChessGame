@@ -68,16 +68,31 @@ const checkCredentials = async (username, password) => {
 }
 
 app.post("/login", async (req, res) => {
-    console.log(req.cookies.credentials);
+    console.log(req.cookies.credentials + " login");
 
     try{
+
+      let validity;
+      let password;
+
+      if(!req?.body?.username){
+        const data = resCookie.decrypt(req.cookies.credentials);
+        const values = data.split(` `);
+        console.log(data+" data");
+        console.log(values);
+        validity = await checkCredentials(values[0], values[1]);
+        password = values[1];
+      }else if(req?.body?.username){
+        validity = await checkCredentials(req.body.username, req.body.password);
+        password = req.body.password;
+      }
       
-      const validity = await checkCredentials(req.body.username, req.body.password);
+      
 
       if(validity){
-        console.log(validity);
-        console.log(`user ${req.body.username} just logged`);
-        res.cookie("credentials", JSON.stringify(resCookie.encrypt(req.body.username, req.body.password)), {httpOnly: true});
+        console.log(validity.username, password + " validity");
+        console.log(`user ${validity.username} just logged`);
+        res.cookie("credentials", JSON.stringify(resCookie.encrypt(validity.username, password)), {httpOnly: true});
         return res.status(200).json({...validity});
       }else{
         return res.status(401).json({data: "Invalid credentials"})
