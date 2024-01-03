@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { setValues } from './store/features/userData';
+import MatchPage from './MatchPage/MatchPage';
 
 function App() {
 
@@ -26,6 +27,7 @@ function App() {
         <Routes>
           <Route path="/" element={<AuthPage />} />
           <Route path="/homepage" element={<HomePage />} />
+          <Route path="/match" element={<MatchPage />} />
         </Routes>
       </BrowserRouter>
   );

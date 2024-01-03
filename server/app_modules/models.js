@@ -39,7 +39,8 @@ const models = {
             type: Sequelize.DataTypes.UUID,
             defaultValue: Sequelize.DataTypes.UUIDV4,
             unique: true,
-            primaryKey: true
+            primaryKey: true,
+            allowNull: false
         },
         player1: {
             type: Sequelize.DataTypes.UUID,
@@ -51,16 +52,16 @@ const models = {
         },
         status: {
             type: Sequelize.DataTypes.STRING,//ongoing / ended
-            allowNull: false
+            allowNull: false,
+            defaultValue: "ongoing"
         },
         winner: {
             type: Sequelize.DataTypes.BOOLEAN,//false for player1, true for player2
             allowNull: true
         },
         turn: {
-            type:Sequelize.DataTypes.BOOLEAN,
-            allowNull: false,
-            defaultValue: Sequelize.col('player1')
+            type: Sequelize.DataTypes.UUID,
+            allowNull: true
         },
 
         //these will represent the pieces location(or 0 if it was captured)
@@ -234,7 +235,13 @@ const models = {
             allowNull: false
         },
     },
-    matchHistory:{
+    matchHistory:{//MH_${match_id}
+        id:{
+            type: Sequelize.DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
+            unique: true
+        },
         pieceMoved:{
             type: Sequelize.DataTypes.STRING,
             allowNull: false

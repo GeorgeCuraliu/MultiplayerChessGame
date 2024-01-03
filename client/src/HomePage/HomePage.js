@@ -7,8 +7,14 @@ import trophie from "../images/trophie0.png";
 import traveler from "../images/traveler.png";
 import logs from "../images/logs.png";
 import guide from "../images/guide.png";
+import { useNavigate } from "react-router";
+import { useDispatch } from "react-redux";
+import { setOpponent } from "../store/features/opponentData";
 
 const HomePage = () => {
+
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const WebSocket = window.WebSocket;
     const websocket = new WebSocket(`ws://${process.env.REACT_APP_API_BASE_URL}/matchQuene`);
@@ -26,7 +32,14 @@ const HomePage = () => {
     };
 
     websocket.onmessage = (event) => {
-        console.log(event.data);
+        if(typeof(event.data) === "string"){
+            console.log(JSON.parse(event.data)); 
+            const data = JSON.parse(event.data);
+            if(data.username){
+                dispatch(setOpponent(data));
+                navigate("/match");
+            }
+        }
     }
 
     return(

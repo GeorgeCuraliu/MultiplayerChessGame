@@ -100,17 +100,39 @@ app.ws(`/matchQuene`, (ws, req) => {
 
           const users = sequelize.define(`Users`, models.users);
           users.sync().then(async() => {
+            try{
+              sequelize.transaction(async(t) => {
 
-            const userdata1 = await users.findOne({where:{username: Object.keys(matchQuene)[0]}});
-            const userdata2 = await users.findOne({where:{username: validity.username}});
+                const opponent = Object.keys(matchQuene)[0];//in case that matchQuene updates with another users
 
-            ws.send(JSON.stringify({username: userdata1.dataValues.username, points: userdata1.dataValues.points}));
-            matchQuene[Object.keys(matchQuene)[0]].send(JSON.stringify({username: userdata2.dataValues.username, points: userdata2.dataValues.points}));
+                const userdata1 = await users.findOne({where:{username: opponent}});
+                await userdata1.update({inMatch: true});
+                await userdata1.save();
+                
+                const userdata2 = await users.findOne({where:{username: validity.username}});
+                await userdata2.update({inMatch: true});
+                await userdata2.save();
 
-            delete matchQuene[Object.keys(matchQuene)[0]];
+                //create the match and get the match id
+                const matches = await sequelize.define(`Matches`, models.matches);
+                await matches.sync();
 
+                const match = await matches.create({player1: userdata1.dataValues.id, player2: userdata2.dataValues.id, turn: userdata1.dataValues.id});
+
+                const MH = await sequelize.define(`MH_${match.dataValues.id}`, models.matchHistory);
+                await MH.sync();
+
+                ws.send(JSON.stringify({username: userdata1.dataValues.username, points: userdata1.dataValues.points}));
+                matchQuene[opponent].send(JSON.stringify({username: userdata2.dataValues.username, points: userdata2.dataValues.points}));
+
+                delete matchQuene[opponent];
+             });
+            }catch(err){
+              console.log(err);
+              console.error("critical error at matchmaking quene");
+            }
           })
-
+          
           matchQuene[Object.keys(matchQuene)[0]].send()
           console.log("starting match");
         }else{

@@ -13,7 +13,6 @@ import { useDispatch } from "react-redux";
 const AuthPage = () => {
 
     const navigate = useNavigate();
-
     const dispatch = useDispatch();
 
     const [authType, setAuthType] = useState(true);//will decide which of LoginContainer or CreateAccountContainer is displayed
