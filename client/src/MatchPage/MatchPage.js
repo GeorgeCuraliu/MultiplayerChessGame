@@ -1,13 +1,14 @@
-import React from "react";
+import UserCard from "../Reusable/Components/UserCard";
+import styles from "./MatchPage.module.css";
 
 const MatchPage = () => {
 
     return(
-        <React.Fragment>
-            <div className="">
-                
+        <div>
+            <div className={styles.usercard}>
+                <UserCard /> 
             </div>
-        </React.Fragment>
+        </div>
     )
 }
 
