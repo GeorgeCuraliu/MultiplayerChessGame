@@ -1,5 +1,6 @@
 import styles from "./homepage.module.css";
 import UserCard from "../Reusable/Components/UserCard";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import findMatchIcon from "../images/find_match.png";
 import trophie from "../images/trophie0.png";
@@ -9,16 +10,32 @@ import guide from "../images/guide.png";
 
 const HomePage = () => {
 
+    const WebSocket = window.WebSocket;
+    const websocket = new WebSocket(`ws://${process.env.REACT_APP_API_BASE_URL}/matchQuene`);
+
     const username = useSelector(state => state.userData.username);
     const points = useSelector(state => state.userData.points);
+
+    const [searchStyle, setSearchStyle] = useState();
+
+    const findMatch = () => {
+        setSearchStyle(val => {
+            websocket.send(!!!val);
+            return val ? undefined : {filter: 'brightness(50%)'}
+        });
+    };
+
+    websocket.onmessage = (event) => {
+        console.log(event.data);
+    }
 
     return(
         <div className={styles.container}>
             <div className={styles.usercard}>
                 <UserCard username={username} points={points}/>
             </div>
-            <section className={styles.container1} >
-                <img alt="findMatchIcon" src={findMatchIcon} />
+            <section style={searchStyle} className={styles.container1} onClick={findMatch}>
+                <img className={styles.findMatchIcon} alt="findMatchIcon" src={findMatchIcon} />
                 <p className={styles.findMatchText} >FIND AN OPPONENT</p>
             </section>
             <section className={styles.container2}>

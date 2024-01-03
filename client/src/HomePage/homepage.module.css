@@ -16,6 +16,12 @@
     margin-left: 15vw;
     background-color: #EAEAEA;
     border-radius: 2vw;
+    filter: brightness(100%);
+    transition: filter 0.7s ease;
+}
+
+.findMatchIcon{
+    width: 100%;
 }
 
 .findMatchText{

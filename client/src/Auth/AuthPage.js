@@ -26,7 +26,7 @@ const AuthPage = () => {
 
     const login = (username, password) => {
         console.log(`login with ${username} ${password} to adress ${process.env.REACT_APP_API_BASE_URL}`);
-        axios.post(`${process.env.REACT_APP_API_BASE_URL}/login`, {username, password}, {withCredentials: true})
+        axios.post(`http://${process.env.REACT_APP_API_BASE_URL}/login`, {username, password}, {withCredentials: true})
         .then(res => {
             if(res.status === 200){
                 console.log(res.data);
@@ -42,7 +42,7 @@ const AuthPage = () => {
 
     const createAcc = (username, password) => {
         console.log(`creating acc with ${username} ${password} to adress ${process.env.REACT_APP_API_BASE_URL}`);
-        axios.post(`${process.env.REACT_APP_API_BASE_URL}/createAcc`, {username, password}, {withCredentials: true})
+        axios.post(`http://${process.env.REACT_APP_API_BASE_URL}/createAcc`, {username, password}, {withCredentials: true})
         .then(res => {
             if(res.status === 201){
                 dispatch(setValues({...res.data}))

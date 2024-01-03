@@ -16,8 +16,6 @@ Sequelize.useCLS(namespace);
 const models = require('./app_modules/models');//models for sequelize
 const associations = require("./app_modules/associations");//create associations for models
 const resCookie = require("./app_modules/resCookie");
-const { error } = require("console");
-const { resolveAny } = require("dns/promises");
 
 //INSTANCE OF SEQUELIZE
 const sequelize = new Sequelize({
@@ -45,6 +43,23 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(cors(corsOBJ));
 
+const matchQuene = {};
+
+const checkCookie = (cookie) => {
+  return new Promise(async(resolve, reject) => {
+    try{
+      const data = resCookie.decrypt(cookie);
+      const values = data.split(` `);
+      console.log(data+" data");
+      console.log(values);
+      validity = await checkCredentials(values[0], values[1]);
+      resolve({validity:validity, password: values[1]});//i have to use another key for password, because the object inside validity will be returned to user
+    }catch{
+      reject();
+    }
+  })
+}
+
 const checkCredentials = async (username, password) => {
   return new Promise(async(resolve, reject) => {
     try{
@@ -67,6 +82,47 @@ const checkCredentials = async (username, password) => {
   
 }
 
+app.ws(`/matchQuene`, (ws, req) => {
+  ws.on(`connection`, stream => {
+    console.log("connection");
+  });
+  ws.on(`message`, async message => {
+
+    const response = await checkCookie(req.cookies.credentials)
+    let validity = response.validity;
+    
+    if(validity){
+      if(matchQuene[validity.username]){
+        console.log(`player ${validity.username} deleted from quene`);
+        delete matchQuene[validity.username];
+      }else{
+        if(Object.keys(matchQuene).length !== 0){
+
+          const users = sequelize.define(`Users`, models.users);
+          users.sync().then(async() => {
+
+            const userdata1 = await users.findOne({where:{username: Object.keys(matchQuene)[0]}});
+            const userdata2 = await users.findOne({where:{username: validity.username}});
+
+            ws.send(JSON.stringify({username: userdata1.dataValues.username, points: userdata1.dataValues.points}));
+            matchQuene[Object.keys(matchQuene)[0]].send(JSON.stringify({username: userdata2.dataValues.username, points: userdata2.dataValues.points}));
+
+            delete matchQuene[Object.keys(matchQuene)[0]];
+
+          })
+
+          matchQuene[Object.keys(matchQuene)[0]].send()
+          console.log("starting match");
+        }else{
+          console.log(`player ${validity.username} is waiting in quene for a match`);
+          matchQuene[validity.username] = ws;
+        }
+      }
+    }
+console.log(Object.keys(matchQuene));
+  });
+});
+
 app.post("/login", async (req, res) => {
     console.log(req.cookies.credentials + " login");
 
@@ -75,20 +131,15 @@ app.post("/login", async (req, res) => {
       let validity;
       let password;
 
-      if(!req?.body?.username){
-        const data = resCookie.decrypt(req.cookies.credentials);
-        const values = data.split(` `);
-        console.log(data+" data");
-        console.log(values);
-        validity = await checkCredentials(values[0], values[1]);
-        password = values[1];
+      if(!req?.body?.username && req?.cookies?.credentials){
+        const response = await checkCookie(req.cookies.credentials);
+        validity = response.validity;
+        password = response.password;
       }else if(req?.body?.username){
         validity = await checkCredentials(req.body.username, req.body.password);
         password = req.body.password;
       }
       
-      
-
       if(validity){
         console.log(validity.username, password + " validity");
         console.log(`user ${validity.username} just logged`);
