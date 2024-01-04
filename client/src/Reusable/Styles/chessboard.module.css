@@ -1,0 +1,14 @@
+.chessBoard{
+    width: 100vw;
+    aspect-ratio: 1/1;
+    background-color: brown;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.square{
+    width: 12.5%;
+    height: 12.5%;
+    padding: 3px solid black;
+}
