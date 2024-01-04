@@ -44,6 +44,7 @@ app.use(express.json());
 app.use(cors(corsOBJ));
 
 const matchQuene = {};
+const activePlayers = {};
 
 const checkCookie = (cookie) => {
   return new Promise(async(resolve, reject) => {
@@ -82,10 +83,7 @@ const checkCredentials = async (username, password) => {
   
 }
 
-app.ws(`/matchQuene`, (ws, req) => {
-  ws.on(`connection`, stream => {
-    console.log("connection");
-  });
+app.ws(`/matchQuene`, (ws, req) => {//used just for quening purposes and preparing a match data
   ws.on(`message`, async message => {
 
     const response = await checkCookie(req.cookies.credentials)
@@ -144,6 +142,28 @@ app.ws(`/matchQuene`, (ws, req) => {
 console.log(Object.keys(matchQuene));
   });
 });
+
+app.ws("/match", (ws, req) => {//no game logic is written on fron-end, so the server can alwasy check the information
+  ws.on(`message`, async message => {
+    console.log(message);
+
+    //used to register the player in activePlayers obj
+    if(message.type === `reg`){
+      const response = await checkCookie(req.credentials.credentials);
+      if(response.validity){
+        activePlayers[response.validity.username] = ws;
+        console.log(Object.keys(activePlayers));
+      }
+    }
+
+    //used to show a user of possible moves for a selected piece
+    //{type:"checkMove", piece:"piece(...WR1)"}
+    if(message.type === `checkMove`){
+      
+    }
+
+  })
+})
 
 app.post("/login", async (req, res) => {
     console.log(req.cookies.credentials + " login");

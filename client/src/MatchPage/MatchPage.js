@@ -4,8 +4,8 @@ import HOC_ChessBoard from "../Reusable/Components/HOC_ChessBoard";
 
 const MatchPage = () => {
 
-    const MatchBoard = HOC_ChessBoard(false);
-
+    const MatchBoard = HOC_ChessBoard("active");
+    
     return(
         <div>
             <div className={styles.usercard}>
@@ -14,7 +14,7 @@ const MatchPage = () => {
                 <UserCard />
             </div>
         </div>
-    )
+    );
 }
 
 export default MatchPage;

@@ -10,5 +10,9 @@
 .square{
     width: 12.5%;
     height: 12.5%;
-    padding: 3px solid black;
+    background-color: #437442;
+}
+
+.odd{
+    background-color: #E8EDCE;
 }
