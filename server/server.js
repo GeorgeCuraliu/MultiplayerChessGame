@@ -14,7 +14,6 @@ Sequelize.useCLS(namespace);
 
 //MODULES
 const models = require('./app_modules/models');//models for sequelize
-const associations = require("./app_modules/associations");//create associations for models
 const resCookie = require("./app_modules/resCookie");
 
 //INSTANCE OF SEQUELIZE
@@ -65,11 +64,12 @@ const checkCredentials = async (username, password) => {
   return new Promise(async(resolve, reject) => {
     try{
       
+      //will define and associate users and macthes
       const users = await sequelize.define(`Users`, models.users);
       const user = await users.findOne({where: {username: username}});
 
       if(user && CryptoJS.AES.decrypt(user.dataValues.password, password).toString(CryptoJS.enc.Utf8) == password){
-        resolve({username: username, points: user.dataValues.points});
+        resolve({username: username, points: user.dataValues.points, inMatch: user.dataValues.inMatch});
       }else{
         resolve(false);
       }
@@ -145,22 +145,25 @@ console.log(Object.keys(matchQuene));
 
 app.ws("/match", (ws, req) => {//no game logic is written on fron-end, so the server can alwasy check the information
   ws.on(`message`, async message => {
-    console.log(message);
+
+    const data = JSON.parse(message);
 
     //used to register the player in activePlayers obj
-    if(message.type === `reg`){
-      const response = await checkCookie(req.credentials.credentials);
+    if(data.type === `auth`){
+      const response = await checkCookie(req.cookies.credentials);
       if(response.validity){
+
         activePlayers[response.validity.username] = ws;
-        console.log(Object.keys(activePlayers));
-      }
-    }
+        //ws.send(JSON.stringify({poss:"not"}));
+
+      };
+    };
 
     //used to show a user of possible moves for a selected piece
     //{type:"checkMove", piece:"piece(...WR1)"}
-    if(message.type === `checkMove`){
+    if(data.type === `checkMove`){
       
-    }
+    };
 
   })
 })

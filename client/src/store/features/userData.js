@@ -4,6 +4,7 @@ export const userData = createSlice({
     name: "userData",
     initialState:{
         username: undefined,
+        inMatch: false,
         points: 0,
         wonMatches: 0
     },
@@ -16,6 +17,7 @@ export const userData = createSlice({
         unsetValues: (state) => {
             state = {
                 username: undefined,
+                inMatch: false,
                 points: 0,
                 wonMatches: 0 
             }
