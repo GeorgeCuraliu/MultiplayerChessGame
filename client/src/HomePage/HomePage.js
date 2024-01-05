@@ -21,6 +21,7 @@ const HomePage = () => {
 
     const username = useSelector(state => state.userData.username);
     const points = useSelector(state => state.userData.points);
+    const inMatch = useSelector(state => state.userData.inMatch);
 
     const [searchStyle, setSearchStyle] = useState();
 
@@ -49,7 +50,7 @@ const HomePage = () => {
             </div>
             <section style={searchStyle} className={styles.container1} onClick={findMatch}>
                 <img className={styles.findMatchIcon} alt="findMatchIcon" src={findMatchIcon} />
-                <p className={styles.findMatchText} >FIND AN OPPONENT</p>
+                <p className={styles.findMatchText} >{inMatch ? "CONTINUE MATCH" : "FIND AN OPPONENT"}</p>
             </section>
             <section className={styles.container2}>
                 <div className={styles.buttonContainer}>

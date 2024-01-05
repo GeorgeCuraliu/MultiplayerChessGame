@@ -16,3 +16,7 @@
 .odd{
     background-color: #E8EDCE;
 }
+
+.piece{
+    width: 100%;
+}

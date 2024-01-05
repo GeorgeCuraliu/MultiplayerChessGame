@@ -13,6 +13,7 @@ export const userData = createSlice({
             console.log(action.payload);
             state.username = action.payload.username;
             state.points = action.payload.points;
+            state.inMatch = action.payload.inMatch
         },
         unsetValues: (state) => {
             state = {

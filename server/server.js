@@ -69,7 +69,7 @@ const checkCredentials = async (username, password) => {
       const user = await users.findOne({where: {username: username}});
 
       if(user && CryptoJS.AES.decrypt(user.dataValues.password, password).toString(CryptoJS.enc.Utf8) == password){
-        resolve({username: username, points: user.dataValues.points, inMatch: user.dataValues.inMatch});
+        resolve({username: username, points: user.dataValues.points, inMatch: user.dataValues.inMatch, id:user.dataValues.id});
       }else{
         resolve(false);
       }
@@ -89,7 +89,26 @@ app.ws(`/matchQuene`, (ws, req) => {//used just for quening purposes and prepari
     const response = await checkCookie(req.cookies.credentials)
     let validity = response.validity;
     
-    if(validity){
+    
+    if(validity?.inMatch){//if the user is already active in a match
+      console.log("user active in match");
+      const matches = await sequelize.define(`Matches`, models.matches);
+      await matches.sync();
+
+      const match = await matches.findOne({where: {
+        [Sequelize.Op.or]: [
+          {player1: validity.id},
+          {player2: validity.id}
+        ],
+        status:"ongoing"
+      }});
+
+      const users = await sequelize.define(`Users`, models.users);
+      await users.sync();
+      const player2 = await users.findOne({where:{id: validity.id === match.dataValues.player1 ? match.dataValues.player2 : match.dataValues.player1}});
+      ws.send(JSON.stringify({username: player2.dataValues.username, points: player2.dataValues.points, matchID: match.dataValues.id}))
+
+    }else if(validity){//if the user is not active in a match
       if(matchQuene[validity.username]){
         console.log(`player ${validity.username} deleted from quene`);
         delete matchQuene[validity.username];
@@ -121,7 +140,7 @@ app.ws(`/matchQuene`, (ws, req) => {//used just for quening purposes and prepari
                 await MH.sync();
 
                 ws.send(JSON.stringify({username: userdata1.dataValues.username, points: userdata1.dataValues.points}));
-                matchQuene[opponent].send(JSON.stringify({username: userdata2.dataValues.username, points: userdata2.dataValues.points}));
+                matchQuene[opponent].send(JSON.stringify({username: userdata2.dataValues.username, points: userdata2.dataValues.points, matchID: match.dataValues.id}));
 
                 delete matchQuene[opponent];
              });
@@ -152,10 +171,47 @@ app.ws("/match", (ws, req) => {//no game logic is written on fron-end, so the se
     if(data.type === `auth`){
       const response = await checkCookie(req.cookies.credentials);
       if(response.validity){
+        try{
+          activePlayers[response.validity.username] = ws;
 
-        activePlayers[response.validity.username] = ws;
-        //ws.send(JSON.stringify({poss:"not"}));
+          const matches = await sequelize.define(`Matches`, models.matches);
+          const match = await matches.findOne({where: {
+            [Sequelize.Op.or]: [
+              {player1: response.validity.id},
+              {player2: response.validity.id}
+            ],
+            status:"ongoing"
+          }});
 
+          const users = await sequelize.define(`Users`, models.users);
+          const player2 = await users.findOne({where:{id: validity.id === match.dataValues.player1 ? match.dataValues.player2 : match.dataValues.player1}});
+
+          const returnObj = {
+            opponent: {
+              username: player2.dataValues.username,
+              points: player2.dataValues.points,
+              matchID: match.dataValues.id
+            },
+            turn: match.dataValues.turn,
+            team:player2.dataValues.id === match.dataValues.player2 ? "white": "black",//black or white
+            localization:{}
+          }
+
+          Object.entries(match.dataValues).forEach(([piece, location]) => {
+            if(piece.length <= 3 && location && piece !== "id"){//use just the piece location keys
+              console.log(piece, location);
+              returnObj.localization[location] = piece;
+
+            }
+          })
+
+          console.log(returnObj);
+
+          ws.send(JSON.stringify({type:"set", data:returnObj}));
+        }catch(err){
+          console.log(err);
+          console.error("critical error at ws/match");
+        }
       };
     };
 
