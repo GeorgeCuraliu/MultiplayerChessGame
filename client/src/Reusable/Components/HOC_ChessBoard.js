@@ -2,11 +2,10 @@ import ChessBoard from "./ChessBoard";
 import { useDispatch } from "react-redux";
 import { setOpponent } from "../../store/features/opponentData";
 import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 
 //get chess board component
 //object !-! mode will have the methods or be a class that will process the events
-
-
 
 const HOC_ChessBoard = (mode) => {
 
@@ -18,11 +17,13 @@ const HOC_ChessBoard = (mode) => {
     //opponent: {}, localization:{square: piece(db_format)}, checkMoves(), move(), turn: id
     const [data, setData] = useState({});
 
-    console.log(mode + " mode");
-
     useEffect(()=>{
         if(mode === "active"){//for active matchmaking and logic processing
-            console.log("inside if")
+            let matchID;
+            const checkMove = location => {
+                console.log({type:"checkMove", location, matchID : matchID});
+                websocket.send(JSON.stringify({type:"checkMove", location, matchID : matchID}));
+            }
 
             websocket.addEventListener('open', () => {
                 console.log("connected");
@@ -30,23 +31,19 @@ const HOC_ChessBoard = (mode) => {
             });
 
             websocket.onmessage = message => {
-                console.log('received data')
+                console.log('received data');
                 const temp = JSON.parse(message.data);
-                console.log('received data')
+                console.log('received data');
                 if(temp.type === "set"){//will set the initial value for the pieces location
                     dispatch(setOpponent(temp.data.opponent));
-                    setData({...temp.data});
-                }
-                if(temp.typr === ""){
+                    matchID = temp.data.opponent.matchID;
+                    setData({...temp.data, checkMove: checkMove});
+                }else if(temp.type === ""){
 
                 }
             };
 
-            data.checkMove = location => {
-                console.log(`cheking moves for piece with location ${location}`)
-                websocket.send(JSON.stringify({type:"checkMove", location}));
-            }
-
+            // setData(val => {return{...val});
         }
     },[]);
 

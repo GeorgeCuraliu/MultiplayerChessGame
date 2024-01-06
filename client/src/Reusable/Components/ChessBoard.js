@@ -5,7 +5,7 @@ import HOC_Square from "./HOC_Square";
 const ChessBoard = (props) => {
 
     const [squares, setSquares] = useState({});//used to generate the table(no data about the pieces)
-
+    
     useEffect(() => {
         let temp = {};
 
@@ -26,10 +26,12 @@ const ChessBoard = (props) => {
     }, [props.data.team]);
 
     console.log(squares);
-    console.log(props.data.checkMove);
+    console.log("fin props");
+    console.log(props.data);
+    console.log("fin props");
 
     return(
-        <div className={styles.chessBoard}>
+        <div className={styles.chessBoard}> 
             {squares && Object.entries(squares).map(([key, Square]) => <Square key={key} piece={props?.data?.localization ? props?.data?.localization[key] : 0} checkMove={props.data.checkMove} team={props.data.team}/>)}
         </div>
     );

@@ -5,18 +5,20 @@ const oppoenntData = createSlice({
     initialState: {
         username: undefined,
         points: 0,
-        gameData:{}//will contain all the info about pieces location
+        matchID:undefined//will contain all the info about pieces location
     },
     reducers:{
         setOpponent: (state, action) => {
             console.log(action.payload);
-            state = {...action.payload};
+            state.username = action.payload.username;
+            state.points = action.payload.points;
+            state.matchID = action.payload.matchID;
         },
         unsetOpponent: (state) => {
             state = {
                 username: undefined,
                 points: 0,
-                gameData:{}
+                matchID:undefined
             }
         }  
     }

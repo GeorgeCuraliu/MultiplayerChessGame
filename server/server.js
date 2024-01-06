@@ -15,6 +15,7 @@ Sequelize.useCLS(namespace);
 //MODULES
 const models = require('./app_modules/models');//models for sequelize
 const resCookie = require("./app_modules/resCookie");
+const gameLogic = require(`./app_modules/gameLogic`);
 
 //INSTANCE OF SEQUELIZE
 const sequelize = new Sequelize({
@@ -75,7 +76,7 @@ const checkCredentials = async (username, password) => {
       }
 
     }catch(err){
-      console.log(err)
+      console.log(err);
       console.error('Critical error at checkCredentials');
       reject();
     }
@@ -199,13 +200,9 @@ app.ws("/match", (ws, req) => {//no game logic is written on fron-end, so the se
 
           Object.entries(match.dataValues).forEach(([piece, location]) => {
             if(piece.length <= 3 && location && piece !== "id"){//use just the piece location keys
-              console.log(piece, location);
               returnObj.localization[location] = piece;
-
             }
-          })
-
-          console.log(returnObj);
+          });
 
           ws.send(JSON.stringify({type:"set", data:returnObj}));
         }catch(err){
@@ -218,7 +215,15 @@ app.ws("/match", (ws, req) => {//no game logic is written on fron-end, so the se
     //used to show a user of possible moves for a selected piece
     //{type:"checkMove", piece:"piece(...WR1)"}
     if(data.type === `checkMove`){
-      
+      console.log(data);
+
+      const matches = await sequelize.define(`Matches`, models.matches);
+      const match = await matches.findOne({where:{id: data.matchID}});
+
+      gameLogic.checkMove(match, data.location);
+
+      console.log(match);
+
     };
 
   })

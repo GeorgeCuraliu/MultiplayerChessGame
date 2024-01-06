@@ -38,10 +38,6 @@ const HOC_Square = (data) => {
             //check to see if a its a piece from this player`s set
             //will check just the first letter to be the same(w===w)(b===b)
 
-            console.log({...props.piece}[0])
-            console.log({...props.team}[0])
-            console.log(props.checkMove)
-            console.log({...props.piece}[0].toLowerCase() === {...props.team}[0].toLowerCase())
             if({...props.piece}[0].toLowerCase() === {...props.team}[0].toLowerCase()){
                 props.checkMove(location);
             }
