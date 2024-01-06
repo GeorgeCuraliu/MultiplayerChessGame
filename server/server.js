@@ -140,7 +140,7 @@ app.ws(`/matchQuene`, (ws, req) => {//used just for quening purposes and prepari
                 const MH = await sequelize.define(`MH_${match.dataValues.id}`, models.matchHistory);
                 await MH.sync();
 
-                ws.send(JSON.stringify({username: userdata1.dataValues.username, points: userdata1.dataValues.points}));
+                ws.send(JSON.stringify({username: userdata1.dataValues.username, points: userdata1.dataValues.points, matchID: match.dataValues.id}));
                 matchQuene[opponent].send(JSON.stringify({username: userdata2.dataValues.username, points: userdata2.dataValues.points, matchID: match.dataValues.id}));
 
                 delete matchQuene[opponent];
@@ -197,7 +197,7 @@ app.ws("/match", (ws, req) => {//no game logic is written on fron-end, so the se
             team:player2.dataValues.id === match.dataValues.player2 ? "white": "black",//black or white
             localization:{}
           }
-
+          console.log(player2.dataValues.id === match.dataValues.player2 ? "white": "black");
           Object.entries(match.dataValues).forEach(([piece, location]) => {
             if(piece.length <= 3 && location && piece !== "id"){//use just the piece location keys
               returnObj.localization[location] = piece;
