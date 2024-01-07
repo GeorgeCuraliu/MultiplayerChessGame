@@ -135,7 +135,7 @@ app.ws(`/matchQuene`, (ws, req) => {//used just for quening purposes and prepari
                 const matches = await sequelize.define(`Matches`, models.matches);
                 await matches.sync();
 
-                const match = await matches.create({player1: userdata1.dataValues.id, player2: userdata2.dataValues.id, turn: userdata1.dataValues.id});
+                const match = await matches.create({player1: userdata1.dataValues.id, player2: userdata2.dataValues.id});
 
                 const MH = await sequelize.define(`MH_${match.dataValues.id}`, models.matchHistory);
                 await MH.sync();
@@ -210,18 +210,93 @@ app.ws("/match", (ws, req) => {//no game logic is written on fron-end, so the se
           console.error("critical error at ws/match");
         }
       };
-    };
+    }
 
-    //used to show a user of possible moves for a selected piece
-    //{type:"checkMove", piece:"piece(...WR1)"}
-    if(data.type === `checkMove`){
+    //used to show a user the possible moves for a selected piece
+
+    else if(data.type === `checkMove`){
 
       const matches = await sequelize.define(`Matches`, models.matches);
       const match = await matches.findOne({where:{id: data.matchID}});
-
       ws.send(JSON.stringify({data:gameLogic.checkMove(match, data.location), type: "checkMove"}));
 
-    };
+    }
+
+    else if(data.type === 'move'){
+
+      const response = await checkCookie(req.cookies.credentials);
+      if(!response.validity){return};
+
+      console.log(data);
+      const matches = await sequelize.define(`Matches`, models.matches);
+      const match = await matches.findOne({where:{id: data.matchID}});
+      const moveData = gameLogic.move(match, data.selected, data.targetLocation);
+
+      if(moveData){
+        sequelize.transaction(async t => {
+
+          const matches = await sequelize.define(`Matches`, models.matches);
+          const match = await matches.findOne({where: {id: data.matchID}});
+          const newTurn = match.dataValues.turn === "white" ? "black" : "white";
+
+          await matches.update({
+            [moveData.movedPiece]: `${String.fromCharCode(96+moveData.targetPosition[1]+1)}${moveData.targetPosition[0]+1}`,
+            turn: newTurn
+          }, {
+            where: {id: data.matchID}
+          });
+
+          await matches.sync();
+
+          //console.log(1, {[moveData.movedPiece]: `${String.fromCharCode(96+moveData.targetPosition[1]+1)}${moveData.targetPosition[0]+1}`});
+          //await match.update({where:{[moveData.movedPiece]: `${String.fromCharCode(96+moveData.targetPosition[1]+1)}${moveData.targetPosition[0]+1}`}});
+          //await match.save();
+
+          if(moveData.attackedPiece){
+            const points = {queen: 9, king: 40, pawn: 2, knight: 4, bishop: 4, rook: 6};
+            let type;
+            if(moveData.attackedPiece.length === 2){
+              type = target.slice(1, 2) === "Q" ? "queen" : "king";
+            }else if(moveData.attackedPiece.length === 3){
+              type = {P : "pawn", K : "knight", B: "bishop", R: "rook"};
+            }
+            
+            //const users = await sequelize.define(`Users`, models.users);
+            //users.update({points: Sequelize.fn('increment', Sequelize.col('points'), points[type])});
+            
+            await matches.update({[moveData.attackedPiece]: false}, {where:{id: data.matchID}});
+            await matches.sync();
+
+            //await match.update({[moveData.attackedPiece] : false});
+          }
+
+          ws.send(JSON.stringify({
+            type:"move",
+            turn: newTurn, 
+            selected: data.selected,
+            movedPiece: moveData.movedPiece, 
+            targetPosition: moveData.targetPosition, 
+            attackedPiece: moveData.attackedPiece
+          }));
+          
+          console.log(data.opponent);
+          if(activePlayers[data.opponent]){
+            activePlayers[data.opponent].send(JSON.stringify({
+              type:"move",
+              turn: newTurn, 
+              selected: data.selected,
+              movedPiece: moveData.movedPiece, 
+              targetPosition: moveData.targetPosition, 
+              attackedPiece: moveData.attackedPiece
+            }));
+          }
+
+          //console.log(match);
+
+        });
+      }
+
+    }
 
   })
 })

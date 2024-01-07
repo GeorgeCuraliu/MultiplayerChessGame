@@ -61,7 +61,8 @@ const models = {
         },
         turn: {
             type: Sequelize.DataTypes.UUID,
-            allowNull: true
+            allowNull: true,
+            defaultValue: "white"
         },
 
         //these will represent the pieces location(or 0 if it was captured)

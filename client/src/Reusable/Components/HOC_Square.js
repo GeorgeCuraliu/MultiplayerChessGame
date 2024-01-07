@@ -1,4 +1,5 @@
 import styles from "../Styles/chessboard.module.css";
+import { useSelector } from "react-redux";
 
 //pieces
 import BB0 from "../../images/pieces/BB0.png";
@@ -28,23 +29,23 @@ const HOC_Square = (data) => {
             piece = <img className={styles.piece}
                     alt={props.piece}
                     src={props.piece.length === 3 ? 
-                        images[{...props.piece}[0] + {...props.piece}[1] + "0"] : 
+                        images[props.piece.slice(0,2) + "0"] : 
                         images[props.piece]} 
                     />
         }
 
         const handleClick = () => {
-
-            //check to see if a its a piece from this player`s set
-            //will check just the first letter to be the same(w===w)(b===b)
-
-            if({...props.piece}[0].toLowerCase() === {...props.team}[0].toLowerCase()){
+            if(!(props.turn === props.team)){return}
+            if(props?.piece?.slice(0,1).toLowerCase() === props?.team?.slice(0,1).toLowerCase()){
                 props.checkMove(location);
+            }else if(props.possMove || props.possAttack){
+                console.log(location)
+                props.move(location);
             }
         }
-        console.log(props.possMove)
+        console.log(props.team)
         return(
-            <div onClick={handleClick} className={`${styles.square} ${(data.i+data.j)%2 !== 0 ? "": styles.odd} ${props.possMove ? styles.possMove : ""}`}>
+            <div onClick={handleClick} className={`${styles.square} ${(data.i+data.j)%2 !== 0 ? "": styles.odd} ${props.possMove ? styles.possMove : ""} ${props.possAttack ? styles.possAttack : ""}`}>
                 {piece}
             </div>
         )

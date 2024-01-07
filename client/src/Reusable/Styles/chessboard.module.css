@@ -25,3 +25,8 @@
     box-sizing: border-box;
     border: 4px solid blue;
 }
+
+.possAttack{
+    box-sizing: border-box;
+    border: 4px solid red;
+}
