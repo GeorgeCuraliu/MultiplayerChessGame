@@ -31,15 +31,19 @@ const HOC_ChessBoard = (mode) => {
             });
 
             websocket.onmessage = message => {
-                console.log('received data');
-                const temp = JSON.parse(message.data);
-                console.log('received data');
+                let temp;
+                if(typeof(message.data) === "string"){
+                    temp = JSON.parse(message.data);
+                }else{
+                    temp = message.data;
+                }
+                console.log(temp);
                 if(temp.type === "set"){//will set the initial value for the pieces location
                     dispatch(setOpponent(temp.data.opponent));
                     matchID = temp.data.opponent.matchID;
                     setData({...temp.data, checkMove: checkMove});
-                }else if(temp.type === ""){
-
+                }else if(temp.type === "checkMove"){
+                    setData(val=>{return{...val, ...temp.data}})
                 }
             };
 

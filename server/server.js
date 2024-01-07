@@ -215,14 +215,11 @@ app.ws("/match", (ws, req) => {//no game logic is written on fron-end, so the se
     //used to show a user of possible moves for a selected piece
     //{type:"checkMove", piece:"piece(...WR1)"}
     if(data.type === `checkMove`){
-      console.log(data);
 
       const matches = await sequelize.define(`Matches`, models.matches);
       const match = await matches.findOne({where:{id: data.matchID}});
 
-      gameLogic.checkMove(match, data.location);
-
-      console.log(match);
+      ws.send(JSON.stringify({data:gameLogic.checkMove(match, data.location), type: "checkMove"}));
 
     };
 

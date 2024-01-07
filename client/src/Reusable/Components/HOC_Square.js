@@ -42,9 +42,9 @@ const HOC_Square = (data) => {
                 props.checkMove(location);
             }
         }
-
+        console.log(props.possMove)
         return(
-            <div onClick={handleClick} className={`${styles.square} ${(data.i+data.j)%2 !== 0 ? "": styles.odd}`}>
+            <div onClick={handleClick} className={`${styles.square} ${(data.i+data.j)%2 !== 0 ? "": styles.odd} ${props.possMove ? styles.possMove : ""}`}>
                 {piece}
             </div>
         )
