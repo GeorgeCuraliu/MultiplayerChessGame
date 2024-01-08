@@ -1,17 +1,22 @@
 const checkPossMoves = (matrix, possMoves, enemyColor) => {//possMoves will be in x, y format
+
     const returnData = {moves: [], attacks: []};
     console.log(possMoves);
     console.log(enemyColor);
-
-    possMoves?.moves.forEach(move => {
-        if(move[0] <= 7 && move[0] >= 0 && move[1] <= 7 && move[1] >= 0){
-            console.log(move, matrix[move[0]][move[1]], enemyColor)
-            if(!matrix[move[0]][move[1]]){
-                returnData.moves.push(move);
-            }else if(matrix[move[0]][move[1]].slice(0,1) === enemyColor){
-                returnData.attacks.push(move);
+    console.log(" ---- ");
+    possMoves?.moves.forEach((movesArr) => {
+        movesArr.forEach(move => {
+            if(move[0] <= 7 && move[0] >= 0 && move[1] <= 7 && move[1] >= 0){
+                console.log(move, matrix[move[0]][move[1]], enemyColor)
+                if(!matrix[move[0]][move[1]]){
+                    returnData.moves.push(move);
+                }else if(matrix[move[0]][move[1]].slice(0,1) === enemyColor){
+                    returnData.attacks.push(move);
+                }else{
+                    return;
+                }
             }
-        }
+        })
     });
 
     possMoves?.attacks.forEach(move => {
@@ -42,11 +47,10 @@ const movesSim = {//location will reprezent the target piece
     pawn : (matrix, location, color) => {
         console.log(`simulating possible moves for [y-${location[1]}, x-${location[0]}], pawn, ${color}`);
         
-
         if(color === "white"){//good
             const possMoves = {
                 moves: [
-                    [location[1]+1, location[0]]
+                    [[location[1]+1], [location[0]]]
                 ], 
                 attacks:[
                     [location[1]+1, location[0]+1],
@@ -64,7 +68,7 @@ const movesSim = {//location will reprezent the target piece
 
             const possMoves = {
                 moves: [
-                    [location[1]-1, location[0]]
+                    [[location[1]-1,location[0]]]
                 ], 
                 attacks:[
                     [location[1]-1, location[0]+1],
@@ -73,7 +77,7 @@ const movesSim = {//location will reprezent the target piece
             };
 
             if(location[1] === 6){
-                possMoves.moves.push([location[1]-2, location[0]]);
+                possMoves.moves.push([[location[1]-2, location[0]]]);
             }
 
             return checkPossMoves(matrix, possMoves, matrix[location[1]][location[0]].slice(0, 1) === "W" ? "B" : "W");
@@ -135,7 +139,7 @@ const getMoves = (data, currentLocation, returnMatrix = false) => {
     //console.log(matrix);
     let target
     if(typeof(currentLocation) === "string"){
-        target = [currentLocation.charCodeAt(0,1) - 96-1, Number(currentLocation.substring(1))-1];//[x,y] -- location
+        target = [currentLocation.charCodeAt(0,1) - 96 - 1, Number(currentLocation.substring(1)) - 1];//[x,y] -- location
     }else{
         target = currentLocation;
     }
