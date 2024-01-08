@@ -256,7 +256,7 @@ app.ws("/match", (ws, req) => {//no game logic is written on fron-end, so the se
             const points = {queen: 9, king: 40, pawn: 2, knight: 4, bishop: 4, rook: 6};
             let type;
             if(moveData.attackedPiece.length === 2){
-              type = target.slice(1, 2) === "Q" ? "queen" : "king";
+              type = moveData.attackedPiece.slice(1, 2) === "Q" ? "queen" : "king";
             }else if(moveData.attackedPiece.length === 3){
               type = {P : "pawn", K : "knight", B: "bishop", R: "rook"};
             }
