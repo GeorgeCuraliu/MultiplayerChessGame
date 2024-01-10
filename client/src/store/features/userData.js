@@ -22,9 +22,12 @@ export const userData = createSlice({
                 points: 0,
                 wonMatches: 0 
             }
+        }, 
+        addUserPoints : (state, action) => {
+            state.points+=action.payload.points
         }
     }
 });
 
-export const {setValues, unsetValues} = userData.actions;
+export const {setValues, unsetValues, addUserPoints} = userData.actions;
 export default userData.reducer;

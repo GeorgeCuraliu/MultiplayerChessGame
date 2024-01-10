@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const oppoenntData = createSlice({
+const opponentData = createSlice({
     name:"opponentData",
     initialState: {
         username: undefined,
@@ -20,9 +20,12 @@ const oppoenntData = createSlice({
                 points: 0,
                 matchID:undefined
             }
+        },
+        addOpponentPoints : (state, action) => {
+            state.points+=action.payload.points
         }  
     }
 });
 
-export const {setOpponent, unsetOpponent} = oppoenntData.actions;
-export default oppoenntData.reducer;
+export const {setOpponent, unsetOpponent, addOpponentPoints} = opponentData.actions;
+export default opponentData.reducer;

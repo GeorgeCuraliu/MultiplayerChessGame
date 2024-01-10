@@ -187,6 +187,10 @@ app.ws("/match", (ws, req) => {//no game logic is written on fron-end, so the se
           const users = await sequelize.define(`Users`, models.users);
           const player2 = await users.findOne({where:{id: validity.id === match.dataValues.player1 ? match.dataValues.player2 : match.dataValues.player1}});
 
+          //will calculate the time elapsed from the start of the match(in seconds)
+          const currentTime = new Date();
+          const time = match.dataValues.createdAt.getTime() - currentTime.getTime(); 
+
           const returnObj = {
             opponent: {
               username: player2.dataValues.username,
@@ -194,6 +198,7 @@ app.ws("/match", (ws, req) => {//no game logic is written on fron-end, so the se
               matchID: match.dataValues.id
             },
             turn: match.dataValues.turn,
+            time,
             team:player2.dataValues.id === match.dataValues.player2 ? "white": "black",//black or white
             localization:{}
           }
@@ -248,9 +253,7 @@ app.ws("/match", (ws, req) => {//no game logic is written on fron-end, so the se
 
           await matches.sync();
 
-          //console.log(1, {[moveData.movedPiece]: `${String.fromCharCode(96+moveData.targetPosition[1]+1)}${moveData.targetPosition[0]+1}`});
-          //await match.update({where:{[moveData.movedPiece]: `${String.fromCharCode(96+moveData.targetPosition[1]+1)}${moveData.targetPosition[0]+1}`}});
-          //await match.save();
+          let addPoints = {};
 
           if(moveData.attackedPiece){
             const points = {queen: 9, king: 40, pawn: 2, knight: 4, bishop: 4, rook: 6};
@@ -258,16 +261,22 @@ app.ws("/match", (ws, req) => {//no game logic is written on fron-end, so the se
             if(moveData.attackedPiece.length === 2){
               type = moveData.attackedPiece.slice(1, 2) === "Q" ? "queen" : "king";
             }else if(moveData.attackedPiece.length === 3){
-              type = {P : "pawn", K : "knight", B: "bishop", R: "rook"};
+              const pieces = {P : "pawn", K : "knight", B: "bishop", R: "rook"};
+              type = pieces[moveData.attackedPiece.slice(1, 2)];
             }
+
+            addPoints[response.validity.username] = points[type];
             
-            //const users = await sequelize.define(`Users`, models.users);
-            //users.update({points: Sequelize.fn('increment', Sequelize.col('points'), points[type])});
+            const users = await sequelize.define(`Users`, models.users);
+            await users.update(
+              { points: Sequelize.literal(`points + ${points[type]}`) },
+              { where: { username: response.validity.username } }
+            );
+            await users.sync();
             
             await matches.update({[moveData.attackedPiece]: false}, {where:{id: data.matchID}});
             await matches.sync();
 
-            //await match.update({[moveData.attackedPiece] : false});
           }
 
           ws.send(JSON.stringify({
@@ -276,7 +285,8 @@ app.ws("/match", (ws, req) => {//no game logic is written on fron-end, so the se
             selected: data.selected,
             movedPiece: moveData.movedPiece, 
             targetPosition: moveData.targetPosition, 
-            attackedPiece: moveData.attackedPiece
+            attackedPiece: moveData.attackedPiece,
+            addPoints
           }));
           
           console.log(data.opponent);
@@ -287,7 +297,8 @@ app.ws("/match", (ws, req) => {//no game logic is written on fron-end, so the se
               selected: data.selected,
               movedPiece: moveData.movedPiece, 
               targetPosition: moveData.targetPosition, 
-              attackedPiece: moveData.attackedPiece
+              attackedPiece: moveData.attackedPiece,
+              addPoints
             }));
           }
 

@@ -250,6 +250,10 @@ const models = {
         movedTo:{
             type: Sequelize.DataTypes.STRING,
             allowNull: false
+        },
+        attackedPiece:{
+            type: Sequelize.DataTypes.STRING,
+            allowNull: true
         }
     }
 }

@@ -1,5 +1,23 @@
-.usercard{
+.pageContainer{
+    width: 100vw;
+    height: 100vh;
+    background-color: #302E2B;
+}
+.matchBoard{
     width: 100vw;
     aspect-ratio: 7/1;
 }
+.stats{
+    height: calc(100vh - 128vw);
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 5vw;
+}
 
+.stat{
+    font-size: 9vw;
+    color: #EDEDED;
+}
