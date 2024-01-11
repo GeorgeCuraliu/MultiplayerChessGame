@@ -236,7 +236,9 @@ const gameLogic = {
         const coordsTargetLoc = [Number(targetLocation.substring(1))-1, targetLocation.charCodeAt(0,1) - 96-1];
         console.log(coordsTargetLoc);
 
-        const moveData = {movedPiece: possMoves.matrix[currentLocation[1]][currentLocation[0]]}; 
+        const moveData = {
+            movedPiece: possMoves.matrix[currentLocation[1]][currentLocation[0]]
+        }; 
 
         possMoves.moves.forEach(move => {
             if(move[0] === coordsTargetLoc[0] && move[1] === coordsTargetLoc[1]){

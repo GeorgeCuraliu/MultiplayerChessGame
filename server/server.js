@@ -149,7 +149,7 @@ app.ws(`/matchQuene`, (ws, req) => {//used just for quening purposes and prepari
               console.log(err);
               console.error("critical error at matchmaking quene");
             }
-          })
+          });
           
           matchQuene[Object.keys(matchQuene)[0]].send()
           console.log("starting match");
@@ -278,6 +278,24 @@ app.ws("/match", (ws, req) => {//no game logic is written on fron-end, so the se
             await matches.sync();
 
           }
+
+          const matchHistory = await sequelize.define(`MH_${data.matchID}`);
+          await matchHistory.sync(); 
+
+          const targetLocation = `${String.fromCharCode(96+data.targetLocation[0])}${data.targetLocation[1]}`
+
+          console.log({
+            pieceMoved: moveData.movedPiece, 
+            movedFrom: data.selected,
+            movedTo: targetLocation,
+            attackedPiece: moveData.attackedPiece 
+        });
+          await matchHistory.create({
+            pieceMoved: moveData.movedPiece, 
+            movedFrom: data.selected,
+            movedTo: targetLocation,
+            attackedPiece: moveData.attackedPiece 
+          });
 
           ws.send(JSON.stringify({
             type:"move",

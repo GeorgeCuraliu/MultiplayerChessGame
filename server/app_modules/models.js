@@ -247,6 +247,10 @@ const models = {
             type: Sequelize.DataTypes.STRING,
             allowNull: false
         },
+        movedFrom:{
+            type: Sequelize.DataTypes.STRING,
+            allowNull: false
+        },
         movedTo:{
             type: Sequelize.DataTypes.STRING,
             allowNull: false
