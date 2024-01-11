@@ -8,6 +8,8 @@ const MatchPage = () => {
 
     const user = useSelector(state => state.userData);
     const opponent = useSelector(state => state.opponentData);
+    const winner = useSelector(state => state.matchStats.winner);
+
     console.log(user)
     console.log(opponent)
 
@@ -16,9 +18,9 @@ const MatchPage = () => {
     return(
         <div className={styles.pageContainer}>
             <div className={styles.matchBoard}>
-                <UserCard username={opponent.username} points={opponent.points}/> 
+                <UserCard username={opponent.username} points={opponent.points} extra = {winner === "user" ? "WINNER" : undefined} /> 
                 <MatchBoard />
-                <UserCard username={user.username} points={user.points} />
+                <UserCard username={user.username} points={user.points} extra = {winner === "opponent" ? "WINNER" : undefined} />
             </div>
             <div className={styles.stats}>
                 <Stats />

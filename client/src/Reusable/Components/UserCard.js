@@ -9,6 +9,7 @@ const UserCard = (props) => {
             <img className={styles.chessPlayer} alt="chess_player" src={ChessPlayer}/>
             <p className={styles.username} >{props.username}</p>
             <p className={styles.points} >{points}</p>
+            <p className={styles.username}>{props?.extra}</p>
         </div>
     )
 }

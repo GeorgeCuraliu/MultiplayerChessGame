@@ -4,7 +4,8 @@ const matchStats = createSlice({
     name: "matchStats",
     initialState:{
         time: undefined,
-        turn: undefined
+        turn: undefined,
+        winner: undefined//will contain either "opponent" or "user"
     },
     reducers:{
         setStats: (state, action) => {
@@ -16,9 +17,13 @@ const matchStats = createSlice({
         },
         updateTurn: (state) => {
             state.turn = state.turn === "black" ? "white" : "black"; 
+        },
+        setWinner: (state, action) => {
+            state.winner = action.payload.winner
+            console.log(action.payload.winner, " WINNER");
         }
     }
 })
 
-export const {setStats, updateTime, updateTurn} = matchStats.actions;
+export const {setStats, updateTime, updateTurn, setWinner} = matchStats.actions;
 export default matchStats.reducer;

@@ -244,6 +244,9 @@ app.ws("/match", (ws, req) => {//no game logic is written on fron-end, so the se
           const match = await matches.findOne({where: {id: data.matchID}});
           const newTurn = match.dataValues.turn === "white" ? "black" : "white";
 
+          //in case that a user is tring to move a piece in an already ended match
+          if(match.dataValues.status === "ended"){return}
+
           await matches.update({
             [moveData.movedPiece]: `${String.fromCharCode(96+moveData.targetPosition[1]+1)}${moveData.targetPosition[0]+1}`,
             turn: newTurn
@@ -253,8 +256,9 @@ app.ws("/match", (ws, req) => {//no game logic is written on fron-end, so the se
 
           await matches.sync();
 
-          let addPoints = {};
+          let addPoints = {}, winner;
 
+          //required db modifications in case of a piece being destroyed(includes the game-over logic)
           if(moveData.attackedPiece){
             const points = {queen: 9, king: 40, pawn: 2, knight: 4, bishop: 4, rook: 6};
             let type;
@@ -266,34 +270,48 @@ app.ws("/match", (ws, req) => {//no game logic is written on fron-end, so the se
             }
 
             addPoints[response.validity.username] = points[type];
-            
             const users = await sequelize.define(`Users`, models.users);
-            await users.update(
-              { points: Sequelize.literal(`points + ${points[type]}`) },
-              { where: { username: response.validity.username } }
-            );
-            await users.sync();
-            
-            await matches.update({[moveData.attackedPiece]: false}, {where:{id: data.matchID}});
-            await matches.sync();
+
+            //the game-over logic
+            if(type === "king"){
+              winner = moveData.attackedPiece.slice(0, 1) === "W" ? "black" : "white";
+              console.log(winner, moveData.attackedPiece, " winner");
+              await matches.update({[moveData.attackedPiece]: false, winner: winner, status: "ended"}, {where:{id: data.matchID}});
+              await users.update({inMatch: false}, {where: {id: match.dataValues.player1}});
+              await users.update({inMatch: false}, {where: {id: match.dataValues.player2}});
+              if(winner === "white"){
+                await users.update({wonMatches: Sequelize.literal(`wonMatches + 1`)}, {where: {id: match.dataValues.player1}});
+              }else{
+                await users.update({wonMatches: Sequelize.literal(`wonMatches + 1`)}, {where: {id: match.dataValues.player2}});
+              }
+            }else{
+              await matches.update({[moveData.attackedPiece]: false}, {where:{id: data.matchID}});
+            }
+              await users.update(
+                { points: Sequelize.literal(`points + ${points[type]}`) },
+                { where: { username: response.validity.username } }
+              );
+
+              await users.sync();
+              await matches.sync();
 
           }
 
-          const matchHistory = await sequelize.define(`MH_${data.matchID}`);
+          const matchHistory = await sequelize.define(`MH_${data.matchID}`, models.matchHistory);
           await matchHistory.sync(); 
 
-          const targetLocation = `${String.fromCharCode(96+data.targetLocation[0])}${data.targetLocation[1]}`
+          const formatedCurrentLocation = `${String.fromCharCode(96+data.selected[0])}${data.selected[1]}`; 
 
           console.log({
             pieceMoved: moveData.movedPiece, 
-            movedFrom: data.selected,
-            movedTo: targetLocation,
+            movedFrom: formatedCurrentLocation,
+            movedTo: data.targetLocation,
             attackedPiece: moveData.attackedPiece 
         });
           await matchHistory.create({
             pieceMoved: moveData.movedPiece, 
-            movedFrom: data.selected,
-            movedTo: targetLocation,
+            movedFrom: formatedCurrentLocation,
+            movedTo: data.targetLocation,
             attackedPiece: moveData.attackedPiece 
           });
 
@@ -304,7 +322,8 @@ app.ws("/match", (ws, req) => {//no game logic is written on fron-end, so the se
             movedPiece: moveData.movedPiece, 
             targetPosition: moveData.targetPosition, 
             attackedPiece: moveData.attackedPiece,
-            addPoints
+            addPoints,
+            winner: winner
           }));
           
           console.log(data.opponent);
@@ -316,11 +335,10 @@ app.ws("/match", (ws, req) => {//no game logic is written on fron-end, so the se
               movedPiece: moveData.movedPiece, 
               targetPosition: moveData.targetPosition, 
               attackedPiece: moveData.attackedPiece,
-              addPoints
+              addPoints,
+              winner: winner
             }));
           }
-
-          //console.log(match);
 
         });
       }

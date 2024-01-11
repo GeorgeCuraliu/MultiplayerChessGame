@@ -4,7 +4,7 @@ import { setOpponent } from "../../store/features/opponentData";
 import { useState, useEffect } from "react";
 import { addOpponentPoints } from "../../store/features/opponentData";
 import { addUserPoints } from "../../store/features/userData";
-import { setStats, updateTurn } from "../../store/features/matchStats";
+import { setStats, updateTurn, setWinner } from "../../store/features/matchStats";
 
 //get chess board component
 //object !-! mode will have the methods or be a class that will process the events
@@ -67,7 +67,9 @@ const HOC_ChessBoard = (mode) => {
                     localData.localization[`${String.fromCharCode(96+temp.targetPosition[1]+1)}${temp.targetPosition[0]+1}`] = piece;
                     localData.moves = [];
                     localData.attacks = [];
-                    console.log(Object.keys(temp.addPoints)[0],opponent, " points")
+                    console.log(Object.keys(temp.addPoints)[0],opponent, " points");
+
+                    //will add points in case of a piece being attacked
                     if(temp.addPoints && Object.keys(temp.addPoints).length !== 0){
                         if(Object.keys(temp.addPoints)[0] === opponent){
                             dispatch(addOpponentPoints({points : Object.values(temp.addPoints)[0]}));
@@ -75,11 +77,18 @@ const HOC_ChessBoard = (mode) => {
                             dispatch(addUserPoints({points : Object.values(temp.addPoints)[0]}));
                         }
                     }
+
+                    //will apply game-over logic
+                    if(temp?.winner){
+                        if(temp.winner === temp.team){
+                            dispatch(setWinner({winner: "user"}));
+                        }else{
+                            dispatch(setWinner({winner: "opponent"}));
+                        }
+                    }
                     setData({...localData});
                 }
             };
-
-            // setData(val => {return{...val});
         }
     },[]);
 

@@ -25,7 +25,7 @@ const Stats = () => {
     return(
         <React.Fragment>
             <div className={styles.stat}>TURN : {turn?.toUpperCase()}</div>
-            <div className={styles.stat}>{-hours}:{-minutes < 10 ? "0" : undefined}{-minutes}</div>
+            <div className={styles.stat}>{-hours < 10 ? "0" : undefined}{-hours-1}:{-minutes < 10 ? "0" : undefined}{-minutes}</div>
         </React.Fragment>
     )
 }
