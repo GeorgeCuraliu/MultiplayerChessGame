@@ -1,5 +1,4 @@
 import styles from "../Styles/chessboard.module.css";
-import { useSelector } from "react-redux";
 
 //pieces
 import BB0 from "../../images/pieces/BB0.png";
