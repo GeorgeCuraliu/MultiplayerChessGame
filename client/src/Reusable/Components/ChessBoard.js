@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import styles from "../Styles/chessboard.module.css"
 import HOC_Square from "./HOC_Square";
 
+
 const ChessBoard = (props) => {
 
     const [squares, setSquares] = useState({});//used to generate the table(no data about the pieces)

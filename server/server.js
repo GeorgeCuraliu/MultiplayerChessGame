@@ -87,7 +87,7 @@ const checkCredentials = async (username, password) => {
 app.ws(`/matchQuene`, (ws, req) => {//used just for quening purposes and preparing a match data
   ws.on(`message`, async message => {
 
-    const response = await checkCookie(req.cookies.credentials)
+    const response = await checkCookie(req.cookies.credentials);
     let validity = response.validity;
     
     
@@ -348,6 +348,9 @@ app.ws("/match", (ws, req) => {//no game logic is written on fron-end, so the se
   })
 })
 
+
+
+//auth
 app.post("/login", async (req, res) => {
     console.log(req.cookies.credentials + " login");
 
@@ -416,6 +419,40 @@ app.post("/createAcc", async (req, res) => {
     }
 });
 
+
+
+
+//request matches data(for logs or match history)
+app.post("/matchesLog", async (req, res) => {//req.body.targetUser(boolean -- to include just the specific user matches)
+
+  const response = await checkCookie(req.cookies.credentials);
+
+  const matches = await sequelize.define(`Matches`, models.matches);
+  await matches.sync();
+
+  let data;
+  if(req.body.targetUser){
+    data = await matches.findAll({
+      where: {
+        [Sequelize.Op.or]: [
+          {player1: response.validity.id},
+          {player2: response.validity.id}
+        ],
+        status:"ended"
+      }, 
+      attributes:['id', 'player1', "player2", "winner"]
+    });
+  }else{
+    data = await matches.findAll({where: {status: "ended"}, attributes:['id', 'player1', "player2", "winner"]});
+  };
+
+  const returnData = data.map(match => {
+    return {...match.dataValues};
+  })
+  
+  res.status(200).json({data: returnData});
+
+})
 
 
 

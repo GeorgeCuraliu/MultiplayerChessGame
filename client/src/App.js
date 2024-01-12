@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { setValues } from './store/features/userData';
 import MatchPage from './MatchPage/MatchPage';
+import MatchesLog from './MatchesLog/MatchesLog';
 
 function App() {
 
@@ -28,6 +29,7 @@ function App() {
           <Route path="/" element={<AuthPage />} />
           <Route path="/homepage" element={<HomePage />} />
           <Route path="/match" element={<MatchPage />} />
+          <Route path='/matchesLog' element={<MatchesLog />} />
         </Routes>
       </BrowserRouter>
   );

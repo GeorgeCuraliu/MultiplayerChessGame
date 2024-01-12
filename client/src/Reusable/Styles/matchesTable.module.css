@@ -1,0 +1,15 @@
+.table{
+    width: 70vw;
+    height: fit-content;
+    background-color: #E1B86A;
+    margin-top: 10vw;
+    min-height: 5vh;
+}
+
+.row{
+    width: 100%;
+    aspect-ratio: 5/1;
+    border: 2px solid black;
+    display: flex;
+    flex-direction: row;
+}
