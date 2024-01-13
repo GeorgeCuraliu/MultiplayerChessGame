@@ -342,9 +342,7 @@ app.ws("/match", (ws, req) => {//no game logic is written on fron-end, so the se
 
         });
       }
-
     }
-
   })
 })
 
@@ -432,6 +430,7 @@ app.post("/matchesLog", async (req, res) => {//req.body.targetUser(boolean -- to
 
   let data;
   if(req.body.targetUser){
+    console.log(`targetUser ${response.validity.id}`);
     data = await matches.findAll({
       where: {
         [Sequelize.Op.or]: [
@@ -442,17 +441,36 @@ app.post("/matchesLog", async (req, res) => {//req.body.targetUser(boolean -- to
       }, 
       attributes:['id', 'player1', "player2", "winner"]
     });
-  }else{
+  }else{  
     data = await matches.findAll({where: {status: "ended"}, attributes:['id', 'player1', "player2", "winner"]});
   };
 
-  const returnData = data.map(match => {
-    return {...match.dataValues};
-  })
-  
+  const users = await sequelize.define(`Users`, models.users);
+  await users.sync();
+
+  const returnData = await Promise.all(data.map(async match => {
+
+    return new Promise(async(resolve, reject) => {
+      try{
+        const username1 = await users.findOne({where: {id: match.dataValues.player1}});
+        const username2 = await users.findOne({where: {id: match.dataValues.player2}});
+
+        resolve({
+          ...match.dataValues,  
+          username1: username1.dataValues.username, 
+          username2: username2.dataValues.username
+        });
+      }catch{
+        reject(false);
+      }
+    });   
+  }));
+
+  console.log(returnData);
+
   res.status(200).json({data: returnData});
 
-})
+});
 
 
 

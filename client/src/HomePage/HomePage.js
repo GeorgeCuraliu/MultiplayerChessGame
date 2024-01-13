@@ -58,7 +58,7 @@ const HomePage = () => {
                     <p className={styles.buttonText}>Trophies</p>
                 </div>
                 <div className={styles.buttonContainer}>
-                    <img className={styles.buttonImage} src={traveler} alt="trophie"/>
+                    <img className={styles.buttonImage} onClick={() => {navigate('/journey')}} src={traveler} alt="trophie"/>
                     <p className={styles.buttonText}>Journey</p>
                 </div>
                 <div className={styles.buttonContainer} onClick={() => {navigate("/matchesLog")}} >

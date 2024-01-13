@@ -7,6 +7,7 @@ import { useDispatch } from 'react-redux';
 import { setValues } from './store/features/userData';
 import MatchPage from './MatchPage/MatchPage';
 import MatchesLog from './MatchesLog/MatchesLog';
+import Journey from './Journey/Journey';
 
 function App() {
 
@@ -21,7 +22,7 @@ function App() {
     }).catch(err => {
       console.log("credentials are incorrect");
     })    
-  }, [])
+  }, []);
 
   return (
       <BrowserRouter>
@@ -30,6 +31,7 @@ function App() {
           <Route path="/homepage" element={<HomePage />} />
           <Route path="/match" element={<MatchPage />} />
           <Route path='/matchesLog' element={<MatchesLog />} />
+          <Route path='/journey' element={<Journey />} />
         </Routes>
       </BrowserRouter>
   );
