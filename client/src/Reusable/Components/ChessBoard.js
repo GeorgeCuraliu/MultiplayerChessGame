@@ -24,7 +24,7 @@ const ChessBoard = (props) => {
                 };
         }
         setSquares({...temp});
-    }, [props.data.team]);
+    }, [props?.data?.team]);
 
     console.log(squares);
     console.log("fin props");

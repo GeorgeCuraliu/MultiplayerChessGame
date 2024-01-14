@@ -10,8 +10,8 @@ const MatchPage = () => {
     const opponent = useSelector(state => state.opponentData);
     const winner = useSelector(state => state.matchStats.winner);
 
-    console.log(user)
-    console.log(opponent)
+    console.log(user);
+    console.log(opponent);
 
     const MatchBoard = HOC_ChessBoard("active");
     

@@ -9,7 +9,7 @@ import { setStats, updateTurn, setWinner } from "../../store/features/matchStats
 //get chess board component
 //object !-! mode will have the methods or be a class that will process the events
 
-const HOC_ChessBoard = (mode) => {
+const HOC_ChessBoard = (mode, receivedData={}) => {
 
     const WebSocket = window.WebSocket;
     const websocket = new WebSocket(`ws://${process.env.REACT_APP_API_BASE_URL}/match`);
@@ -89,6 +89,9 @@ const HOC_ChessBoard = (mode) => {
                     setData({...localData});
                 }
             };
+        }else if(mode==="pasive"){
+            console.log(receivedData);
+            setData(receivedData);
         }
     },[]);
 

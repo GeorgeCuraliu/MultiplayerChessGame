@@ -8,6 +8,7 @@ import { setValues } from './store/features/userData';
 import MatchPage from './MatchPage/MatchPage';
 import MatchesLog from './MatchesLog/MatchesLog';
 import Journey from './Journey/Journey';
+import MatchHistory from './MatchHistory/MatchHistory';
 
 function App() {
 
@@ -32,6 +33,7 @@ function App() {
           <Route path="/match" element={<MatchPage />} />
           <Route path='/matchesLog' element={<MatchesLog />} />
           <Route path='/journey' element={<Journey />} />
+          <Route path='mh/:matchID' element={<MatchHistory />} />
         </Routes>
       </BrowserRouter>
   );

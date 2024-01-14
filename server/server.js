@@ -473,6 +473,43 @@ app.post("/matchesLog", async (req, res) => {//req.body.targetUser(boolean -- to
 });
 
 
+app.post(`/getMatchHistory`, async (req, res) => {//req.body.matchID
+
+  let returnData = {};
+
+  const matches = await sequelize.define(`Matches`, models.matches);
+  await matches.sync();
+  const match = await matches.findOne({where: {id: req.body.matchID}});
+
+  const users = await sequelize.define(`Users`, models.users);
+  await users.sync();
+  const username1 = await users.findOne({where: {id: match.dataValues.player1}});
+  const username2 = await users.findOne({where: {id: match.dataValues.player2}});
+
+  returnData.matchData = {
+    id: match.dataValues.id,
+    player1: match.dataValues.player1,
+    player2: match.dataValues.player2,
+    username1: username1.dataValues.username,
+    username2: username2.dataValues.username,
+    winner: match.dataValues.winner
+  }
+
+  const MH = await sequelize.define(`MH_${req.body.matchID}`, models.matchHistory);
+  await MH.sync();
+  const MHdata = await MH.findAll();
+
+  console.log(MHdata);
+
+  returnData.matchHistory = [];
+  MHdata.forEach(data => {
+    returnData.matchHistory.push(data.dataValues);
+  });
+
+  return res.status(200).json({...returnData});
+
+});
+
 
 
 app.listen(port, () => {

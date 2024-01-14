@@ -5,12 +5,12 @@ const MatchesTable = (props) => {//props.data  props.onClick
 
     return(
         <div className={styles.table}>
-            {props.data && props.data.map(matchData => {
+            {props?.data?.map(matchData => {
                 return(
-                    <div className={styles.row} key={matchData.id}>
-                        <p className={styles.username1}>{matchData.username1}</p>
+                    <div className={styles.row} key={matchData.id} onClick={() => {props?.onClick(matchData.id)}}>
+                        <p className={`${styles.username} ${matchData.winner === "white" ? styles.looser : undefined}`}>{matchData.username1}</p>
                         <img src={vsicon} />
-                        <p className={styles.username2}>{matchData.username2}</p>
+                        <p className={`${styles.username} ${matchData.winner === "black" ? styles.looser : undefined}`}>{matchData.username2}</p>
                     </div>
                 )
             })}
