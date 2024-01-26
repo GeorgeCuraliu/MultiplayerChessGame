@@ -1,7 +1,6 @@
 .chessBoard{
     width: 100vw;
     aspect-ratio: 1/1;
-    background-color: brown;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;

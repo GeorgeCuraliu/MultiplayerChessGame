@@ -8,3 +8,22 @@
     width: 100vw;
     aspect-ratio: 7/1;
 }
+
+.statsContainer{
+    width: 100vw;
+    aspect-ratio: 7/1;
+    padding-top: 15vw;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.move{
+    height:100%;
+    aspect-ratio: 3/2;
+    background-color: rgba(0, 0, 0, 0);
+    font-size: 400%;
+}
+.index{
+    font-size: 400%;
+}

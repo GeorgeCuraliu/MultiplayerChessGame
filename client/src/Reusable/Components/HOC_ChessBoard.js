@@ -11,17 +11,20 @@ import { setStats, updateTurn, setWinner } from "../../store/features/matchStats
 
 const HOC_ChessBoard = (mode, receivedData={}) => {
 
+    console.log("HOC_ChessBoard");
+
     const WebSocket = window.WebSocket;
     const websocket = new WebSocket(`ws://${process.env.REACT_APP_API_BASE_URL}/match`);
 
-    //const user = useSelector(state => state.userData.username);
-
     const dispatch = useDispatch();
+    console.log("Dwada");
+    console.log(mode);
+    console.log(receivedData);
 
-    //opponent: {}, localization:{square: piece(db_format)}, checkMoves(), move(), turn: id
     const [data, setData] = useState({});
-
+    
     useEffect(()=>{
+        
         if(mode === "active"){//for active matchmaking and logic processing
             let matchID, localData = {}, opponent;
             const checkMove = location => {
@@ -56,10 +59,10 @@ const HOC_ChessBoard = (mode, receivedData={}) => {
                     setData({...temp.data, checkMove: checkMove, move: move});
                     localData = {...temp.data, checkMove: checkMove, move: move};
                 }else if(temp.type === "checkMove"){
-                    setData(val=>{return{...val, ...temp.data}})
+                    setData(val=>{return{...val, ...temp.data}});
                     localData = {...localData, ...temp.data};
                 }else if(temp.type === "move"){
-                    dispatch(updateTurn())
+                    dispatch(updateTurn());
                     localData.turn = temp.turn;
                     const piece = localData.localization[`${String.fromCharCode(96+temp.selected[0]+1)}${temp.selected[1]+1}`];
                     console.log(piece, temp.targetPosition);
@@ -88,15 +91,17 @@ const HOC_ChessBoard = (mode, receivedData={}) => {
                     }
                     setData({...localData});
                 }
-            };
-        }else if(mode==="pasive"){
-            console.log(receivedData);
-            setData(receivedData);
+            }
+        }else if(mode==="passive"){
+            console.log("passive mode chessboard");
+            // console.log(receivedData);
+            // setData({...receivedData});
         }
     },[]);
-
-    return () => {
-        return(<ChessBoard data = {data} />);
+    
+    return (props) => {
+        console.warn(props.updatedData ? props.updatedData : "no updatedData received")
+        return(<ChessBoard data = {props.updatedData ? props.updatedData : data} />);
     };
 };
 

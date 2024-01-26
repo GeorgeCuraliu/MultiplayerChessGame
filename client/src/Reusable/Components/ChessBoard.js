@@ -27,9 +27,7 @@ const ChessBoard = (props) => {
     }, [props?.data?.team]);
 
     console.log(squares);
-    console.log("fin props");
     console.log(props.data);
-    console.log("fin props");
 
     return(
         <div className={styles.chessBoard}> 

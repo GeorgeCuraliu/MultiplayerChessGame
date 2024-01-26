@@ -300,18 +300,19 @@ app.ws("/match", (ws, req) => {//no game logic is written on fron-end, so the se
           const matchHistory = await sequelize.define(`MH_${data.matchID}`, models.matchHistory);
           await matchHistory.sync(); 
 
-          const formatedCurrentLocation = `${String.fromCharCode(96+data.selected[0])}${data.selected[1]}`; 
+          const formatedCurrentLocation = `${String.fromCharCode(96+data.selected[0]+1)}${Number(data.selected[1])+1}`; 
+          const formatedTargetLocation = `${data.targetLocation.slice(0,1)}${Number(data.targetLocation.slice(1,2))}`;
 
           console.log({
             pieceMoved: moveData.movedPiece, 
             movedFrom: formatedCurrentLocation,
-            movedTo: data.targetLocation,
+            movedTo: formatedTargetLocation,
             attackedPiece: moveData.attackedPiece 
         });
           await matchHistory.create({
             pieceMoved: moveData.movedPiece, 
             movedFrom: formatedCurrentLocation,
-            movedTo: data.targetLocation,
+            movedTo: formatedTargetLocation,
             attackedPiece: moveData.attackedPiece 
           });
 
