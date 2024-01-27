@@ -9,6 +9,7 @@ import MatchPage from './MatchPage/MatchPage';
 import MatchesLog from './MatchesLog/MatchesLog';
 import Journey from './Journey/Journey';
 import MatchHistory from './MatchHistory/MatchHistory';
+import Guide from './Guide/Guide';
 
 function App() {
 
@@ -34,6 +35,7 @@ function App() {
           <Route path='/matchesLog' element={<MatchesLog />} />
           <Route path='/journey' element={<Journey />} />
           <Route path='mh/:matchID' element={<MatchHistory />} />
+          <Route path='/guide' element={<Guide />} />
         </Routes>
       </BrowserRouter>
   );

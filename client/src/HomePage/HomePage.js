@@ -65,7 +65,7 @@ const HomePage = () => {
                     <img className={styles.buttonImage} src={logs} alt="trophie"/>
                     <p className={styles.buttonText}>Matches log</p>
                 </div>
-                <div className={styles.buttonContainer}>
+                <div className={styles.buttonContainer} onClick={() => {navigate("/guide")}}>
                     <img className={styles.buttonImage} src={guide} alt="trophie"/>
                     <p className={styles.buttonText}>Guide</p>
                 </div>
